@@ -5,24 +5,50 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
-	"github.com/yashaswini7291/Inventory/controllers"
-	"github.com/yashaswini7291/Inventory/middleware"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/yashaswini7291/Inventory/routes"
+
+	_ "github.com/yashaswini7291/Inventory/docs"
 )
+
+// @title Inventory Management API
+// @version 1.0
+// @description This is a sample server for Inventory Management
+// @termsOfService http://swagger.io/terms/
+
+// @contact.name API Support
+// @contact.email support@inventory.local
+
+// @host localhost:8080
+// @BasePath /
+
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+// @description Type "Bearer" followed by a space and JWT token.
 
 func main() {
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
 	}
-	log.Println(" Server running on port", port)
+
+	log.Println("Server running on port", port)
+
 	router := gin.New()
 	router.Use(gin.Logger())
+
+	// Public routes
 	routes.UserRoutes(router)
-	router.Use(middleware.Authentication())
-	router.PUT("/products/:id/quantity", controllers.UpdateProductQuantity())
-	router.GET("/products", controllers.GetAllProducts())
-	router.POST("/products", controllers.AddProduct())
+
+	// Swagger docs
+	//router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
+	// Protected routes
+	routes.ProductRoutes(router)
+	
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	log.Fatal(router.Run(":" + port))
 }

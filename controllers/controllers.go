@@ -43,6 +43,17 @@ func VerifyPassword(userPassword string, givenPassword string) (bool, string) {
 	}
 	return valid, msg
 }
+
+// SignUp godoc
+// @Summary Register a new user
+// @Tags Auth
+// @Accept  json
+// @Produce  json
+// @Param user body models.User true "User Info"
+// @Success 201 {string} string "account created successfully"
+// @Failure 400 {object} map[string]string
+// @Failure 409 {object} map[string]string
+// @Router /register [post]
 func SignUp() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
@@ -88,6 +99,16 @@ func SignUp() gin.HandlerFunc {
 		c.JSON(http.StatusCreated, "account created successfully")
 	}
 }
+
+// Login godoc
+// @Summary Login and get JWT token
+// @Tags Auth
+// @Accept  json
+// @Produce  json
+// @Param user body models.User true "Credentials"
+// @Success 200 {object} map[string]string
+// @Failure 400,500 {object} map[string]string
+// @Router /login [post]
 func Login() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
@@ -124,6 +145,18 @@ func Login() gin.HandlerFunc {
 		c.JSON(http.StatusOK, gin.H{"access_token": token})
 	}
 }
+
+// UpdateProductQuantity godoc
+// @Summary Update the quantity of a product
+// @Tags Products
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param id path string true "Product ID"
+// @Param quantity body map[string]int true "Quantity to update"
+// @Success 200 {object} models.Product
+// @Failure 400 {object} map[string]string
+// @Router /products/{id}/quantity [put]
 func UpdateProductQuantity() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		productID := c.Param("id")
@@ -160,6 +193,14 @@ func UpdateProductQuantity() gin.HandlerFunc {
 	}
 }
 
+// GetAllProducts godoc
+// @Summary Get a list of all products
+// @Tags Products
+// @Security BearerAuth
+// @Produce json
+// @Success 200 {array} models.Product
+// @Failure 500 {object} map[string]string
+// @Router /products [get]
 func GetAllProducts() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var productList []models.Product
@@ -190,6 +231,17 @@ func GetAllProducts() gin.HandlerFunc {
 		c.IndentedJSON(200, productList)
 	}
 }
+
+// AddProduct godoc
+// @Summary Add a new product
+// @Tags Products
+// @Security BearerAuth
+// @Accept  json
+// @Produce  json
+// @Param product body models.Product true "Product to Add"
+// @Success 201 {object} map[string]interface{}
+// @Failure 400,500 {object} map[string]string
+// @Router /products [post]
 func AddProduct() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
