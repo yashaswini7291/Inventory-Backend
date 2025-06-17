@@ -9,7 +9,7 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/yashaswini7291/Inventory/routes"
 
-	_ "github.com/yashaswini7291/Inventory/docs" // ✅ import for Swagger docs
+	_ "github.com/yashaswini7291/Inventory/docs"
 )
 
 // @title Inventory Management API
@@ -47,6 +47,7 @@ func main() {
 
 	// Protected routes
 	routes.ProductRoutes(router)
+	
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	log.Fatal(router.Run(":" + port))
