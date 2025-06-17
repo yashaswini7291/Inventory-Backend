@@ -1,0 +1,246 @@
+basePath: /
+definitions:
+  models.Product:
+    properties:
+      _id:
+        type: string
+      description:
+        type: string
+      image_url:
+        type: string
+      name:
+        type: string
+      price:
+        type: number
+      quantity:
+        type: integer
+      sku:
+        type: string
+      type:
+        type: string
+    type: object
+  models.ProductUser:
+    properties:
+      _id:
+        type: string
+      description:
+        type: string
+      image_url:
+        type: string
+      name:
+        type: string
+      price:
+        type: number
+      quantity:
+        type: integer
+      sku:
+        type: string
+      type:
+        type: string
+    type: object
+  models.User:
+    properties:
+      _id:
+        type: string
+      access_token:
+        type: string
+      createdTime:
+        type: string
+      password:
+        type: string
+      refreshToken:
+        type: string
+      updatedTime:
+        type: string
+      userId:
+        type: string
+      usercart:
+        items:
+          $ref: '#/definitions/models.ProductUser'
+        type: array
+      username:
+        maxLength: 30
+        minLength: 2
+        type: string
+    required:
+    - password
+    - username
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@inventory.local
+    name: API Support
+  description: This is a sample server for Inventory Management
+  termsOfService: http://swagger.io/terms/
+  title: Inventory Management API
+  version: "1.0"
+paths:
+  /login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Credentials
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Login and get JWT token
+      tags:
+      - Auth
+  /products:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Product'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get a list of all products
+      tags:
+      - Products
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Product to Add
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/models.Product'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Add a new product
+      tags:
+      - Products
+  /products/{id}/quantity:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Quantity to update
+        in: body
+        name: quantity
+        required: true
+        schema:
+          additionalProperties:
+            type: integer
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Product'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update the quantity of a product
+      tags:
+      - Products
+  /register:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: User Info
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: account created successfully
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "409":
+          description: Conflict
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Register a new user
+      tags:
+      - Auth
+securityDefinitions:
+  BearerAuth:
+    description: Type "Bearer" followed by a space and JWT token.
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
